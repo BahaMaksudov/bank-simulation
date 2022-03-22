@@ -1,6 +1,6 @@
 package com.cydeo.banksimulation.service.implementation;
 
-import com.cydeo.banksimulation.entity.Account;
+import com.cydeo.banksimulation.model.Account;
 import com.cydeo.banksimulation.enums.AccountType;
 import com.cydeo.banksimulation.repository.AccountRepository;
 import com.cydeo.banksimulation.service.AccountService;
@@ -15,7 +15,6 @@ import java.util.UUID;
 public class AccountServiceImpl implements AccountService {
 
     AccountRepository accountRepository;
-
 
     public AccountServiceImpl(AccountRepository accountRepository) {
         this.accountRepository = accountRepository;
@@ -33,5 +32,10 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public List<Account> listAllAccounts() {
         return accountRepository.findAll();
+    }
+
+    @Override
+    public void deleteAccount(UUID account) {
+        accountRepository.deleteAccount();
     }
 }
