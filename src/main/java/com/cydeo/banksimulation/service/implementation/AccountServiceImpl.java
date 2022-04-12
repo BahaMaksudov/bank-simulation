@@ -1,5 +1,6 @@
 package com.cydeo.banksimulation.service.implementation;
 
+import com.cydeo.banksimulation.enums.AccountStatus;
 import com.cydeo.banksimulation.model.Account;
 import com.cydeo.banksimulation.enums.AccountType;
 import com.cydeo.banksimulation.repository.AccountRepository;
@@ -24,7 +25,7 @@ public class AccountServiceImpl implements AccountService {
     public Account createNewAccount(BigDecimal balance, Date creationDate, AccountType accountType, Long userId) {
         Account account = Account.builder().id(UUID.randomUUID())
                 .userId(userId).accountType(accountType)
-                .balance(balance).creationDate(creationDate).build();
+                .balance(balance).creationDate(creationDate).accountStatus(AccountStatus.ACTIVE).build();
 
         return accountRepository.save(account);
     }
@@ -35,7 +36,14 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void deleteAccount(UUID account) {
-        accountRepository.deleteAccount();
+    public void deleteAccount(UUID accountId) {
+        Account account = accountRepository.findById(accountId);
+        account.setAccountStatus(AccountStatus.DELETED);
+        accountRepository.deleteAccount(account);
+    }
+
+    @Override
+    public Account retrieveById(UUID account) {
+        return accountRepository.findById(account);
     }
 }

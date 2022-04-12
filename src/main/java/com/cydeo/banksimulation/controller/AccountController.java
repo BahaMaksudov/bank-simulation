@@ -6,12 +6,16 @@ import com.cydeo.banksimulation.service.AccountService;
 import org.springframework.boot.Banner;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.validation.Valid;
 import java.util.Date;
 import java.util.UUID;
 
 @Controller
+@RequestMapping("/")
 public class AccountController {
 
     private final AccountService accountService;
@@ -22,30 +26,38 @@ public class AccountController {
 
     @GetMapping("/index")
     public String accountList(Model model) {
-        model.addAttribute("accountList",accountService.listAllAccounts());
+        model.addAttribute("accountList", accountService.listAllAccounts());
         return "account/index";
     }
 
     @GetMapping("/create-form")
-    public String getCreateForm(Model model) {
+    public String getCreateForm(Model model){
         model.addAttribute("account", Account.builder().build());
         model.addAttribute("accountTypes", AccountType.values());
         return "account/create-account";
-    }
 
+    }
     @PostMapping("/create")
-    public String createAccount(@ModelAttribute("account") Account account, Model model){
+    public String createAccount(@Valid @ModelAttribute("account") Account account, BindingResult bindingResult, Model model){
+       if(bindingResult.hasErrors()){
+           model.addAttribute("accountTypes", AccountType.values());
+           return "account/create-account";
+       }
         accountService.createNewAccount(account.getBalance(),
                 new Date(),
                 account.getAccountType(),
                 account.getUserId());
-        model.addAttribute("accountList", accountService.listAllAccounts());
+        model.addAttribute("accountList",accountService.listAllAccounts());
+
         return "redirect:/index";
     }
 
-    @GetMapping("/delete")
-    public String deleteUser(@PathVariable("id")UUID id, Model model) {
+    @GetMapping("/delete/{id}")
+    public String deleteUser(@PathVariable("id")UUID id){
         accountService.deleteAccount(id);
         return "redirect:/index";
+
     }
+
+
 }

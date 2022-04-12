@@ -28,7 +28,10 @@ public class AccountRepository {
                 new RecordNotFoundException("This account is not in the Database"));
     }
 
-    public void deleteAccount() {
+    public Account deleteAccount(Account account) {
+        accountList.remove(findById(account.getId()));
+        accountList.add(account);
+        return account;
 
     }
 }
